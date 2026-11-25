@@ -1,0 +1,11 @@
+import { chromium } from '@playwright/test';
+const browser = await chromium.launch({ headless: true, args: ['--no-sandbox'] });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
+await page.goto('http://localhost:3000/#plans', { waitUntil: 'networkidle' });
+await page.evaluate(() => document.fonts.ready);
+await page.locator('#plans').scrollIntoViewIfNeeded();
+await page.screenshot({ path: '/home/ubuntu/webdev-static-assets/komorebi/qa-pricing-fresh.png', animations: 'disabled' });
+console.log(await page.locator('.plan-card').evaluateAll(cards => cards.map(card => ({ name: card.querySelector('h3').textContent, width: card.getBoundingClientRect().width, x: card.getBoundingClientRect().x, centerTopElement: document.elementFromPoint(card.getBoundingClientRect().x + card.getBoundingClientRect().width / 2, card.getBoundingClientRect().y + 40)?.outerHTML?.slice(0, 120) }))));
+await page.locator('#concept').scrollIntoViewIfNeeded();
+await page.screenshot({ path: '/home/ubuntu/webdev-static-assets/komorebi/qa-concept-fresh.png', animations: 'disabled' });
+await browser.close();
